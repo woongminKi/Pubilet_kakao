@@ -18,9 +18,8 @@ function Home() {
   }, [navigator.geolocation]);
 
   useEffect(() => {
-    if(exportToiletAllData || toiletAllData.length) {
+    if(exportToiletAllData) {
       setToiletAllData(exportToiletAllData.data);
-      console.log("데이터:::", exportToiletAllData.data)
     }
   }, [exportToiletAllData]);
 
