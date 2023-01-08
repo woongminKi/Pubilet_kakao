@@ -1,39 +1,55 @@
 import create from "zustand";
+import useGoogleSheets from 'use-google-sheets';
 
 const useStore = create((set) => ({
   lat: null,
   lng: null,
   status: null,
+  toiletStorage: null,
   setLat: () => set((state) => ({ lat: state.lat })),
   setLng: () => set((state) => ({ lng: state.lng })),
   setStatus: () => set((state) => ({ status: state.status })),
+  setToiletStorage: () => set((state) => ({ toiletStorage: state.toiletStorage})),
 
   getLocation: () => {
     if (!navigator.geolocation) {
-      // setStatus("Geolocation is not supported by your browser");
       set(() => ({
         status: "Geolocation is not supported by your browser",
       }));
     } else {
-      // setStatus("Locating...");
       set(() => ({ status: "Locating..." }));
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // setStatus(null);
           set(() => ({ status: null }));
-          // setLat(position.coords.latitude);
           set(() => ({ lat: position.coords.latitude }));
-          // setLng(position.coords.longitude);
           set(() => ({ lng: position.coords.longitude }));
         },
         () => {
-          // setStatus("Unable to retrieve your loaction");
           set(() => ({ status: "Unable to retrieve your loaction" }));
         }
       );
     }
   },
 }));
+
+export const useExportGss = (() => {
+  const { data, loading, error } = useGoogleSheets({
+    apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+    sheetId: process.env.REACT_APP_GOOGLE_SHEETS_ID,
+  });
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error!</div>;
+  }
+
+  const arrayGssData = Array.from(data);
+
+  return arrayGssData;
+});
 
 export default useStore;
